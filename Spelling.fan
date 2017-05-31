@@ -6,7 +6,7 @@ class Test {
     counts := Str:Int[:] { def = 0 }
     text.split.each |word| { counts[word] += 1 }
     totalSize := (Int)(counts.vals.reduce(0) |sum, x, i| { (Int)sum + x })
-    echo(counts["cool"])
+    echo(counts[args[0]])
   }
 
   static const Str letters := "abcdefghijklmnopqrstuvwxyz"
