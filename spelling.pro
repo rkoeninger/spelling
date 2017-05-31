@@ -20,10 +20,14 @@ candidates(Word, Words) :- edits1(Word, EditWords), known(EditWords, Words).
 candidates(Word, Words) :- edits2(Word, EditWords), known(EditWords, Words).
 candidates(Word, [Word]).
 
+unique(Xs, Ys) :-
+    nth0(_, Ys, Xs, X),
+    \+ member(Xs, X).
+
 known(Words, NewWords) :-
     vocab(V),
     filter(containsp(V), Words, Words2),
-    distinct(Words2, NewWords).
+    unique(Words2, NewWords).
 
 edits1(Word, Words) :-
     Letters    is "abcdefghijklmnopqrstuvwxyz",
@@ -33,7 +37,7 @@ edits1(Word, Words) :-
     Replaces   is [L + C + R[1:]             for L, R in Splits if R for C in Letters],
     Inserts    is [L + C + R                 for L, R in Splits for C in Letters],
     concat([Deletes, Transposes, Replaces, Inserts], DupWords),
-    distinct(DupWords, Words).
+    unique(DupWords, Words).
 
 edits2(Word, Words) :-
     edits1(Word, Words1),
