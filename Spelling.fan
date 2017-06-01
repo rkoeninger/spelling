@@ -6,7 +6,7 @@ class Spelling {
     counts := Str:Int[:] { def = 0 }
     text.split.each |word| { counts[word] += 1 }
     totalSize := (Int)(counts.vals.reduce(0) |sum, x, i| { (Int)sum + x })
-    echo(counts[args[0]])
+    args.each |arg| { echo(correction(counts, totalSize, arg)) }
   }
 
   static const Range letters := Range.makeExclusive(97, 97 + 26)
