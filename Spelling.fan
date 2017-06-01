@@ -9,7 +9,7 @@ class Spelling {
     echo(counts[args[0]])
   }
 
-  static const Str letters := "abcdefghijklmnopqrstuvwxyz"
+  static const Range letters := Range.makeExclusive(97, 97 + 26)
 
   ** Probability of `word`.
   static Float probability(Str:Int counts, Int totalSize, Str word) {
@@ -44,27 +44,57 @@ class Spelling {
 
   ** All edits that are one edit away from `word`.
   static Str[] edits1(Str word) {
-    range := Range.makeInclusive(0, word.size)
-    splits := range.map |i| {
-      r1 := Range.makeInclusive(0, i)
-      r2 := Range.makeExclusive(i, word.size)
-      return Pair.make(word.getRange(r1), word.getRange(r2))
+    edits := Str[,]
+
+    for (i := 0; i < word.size; ++i) {
+      edits.add(delete(word, i))
+
+      if (i < word.size - 2) {
+        edits.add(transpose(word, i))
+      }
+
+      edits.addAll(replace(word, i))
+      edits.addAll(insert(word, i))
     }
-    return Str[,]
+
+    edits = edits.unique
+    edits.remove(word)
+    return edits
+  }
+
+  ** Word with `i`th letter removed.
+  static Str delete(Str word, Int i) {
+    left := word.getRange(Range.makeExclusive(0, i))
+    right := word.getRange(Range.makeExclusive(i + 1, word.size))
+    return left + right
+  }
+
+  ** Word with `i`th and `i+1`st letter swapped.
+  static Str transpose(Str word, Int i) {
+    left := word.getRange(Range.makeExclusive(0, i))
+    right := word.getRange(Range.makeExclusive(i, word.size))
+    first := right.get(0).toChar
+    second := right.get(1).toChar
+    rest := right.getRange(Range.makeExclusive(2, right.size))
+    return left + second + first + rest
+  }
+
+  ** Word with `i`th letter replaced with every other letter.
+  static Str[] replace(Str word, Int i) {
+    left := word.getRange(Range.makeExclusive(0, i))
+    right := word.getRange(Range.makeExclusive(i + 1, word.size))
+    return letters.map |ch| { left + ch.toChar + right }
+  }
+
+  ** Word with each letter inserted at `i`.
+  static Str[] insert(Str word, Int i) {
+    left := word.getRange(Range.makeExclusive(0, i))
+    right := word.getRange(Range.makeExclusive(i, word.size))
+    return letters.map |ch| { left + ch.toChar + right }
   }
 
   ** All edits that are two edits away from `word`.
   static Str[] edits2(Str word) {
     (Str[])(edits1(word).map |w| { edits1(w) }.flatten)
   }
-}
-
-class Pair {
-  new make(Obj? x, Obj? y) {
-    this.x = x
-    this.y = y
-  }
-
-  Obj? x
-  Obj? y
 }
