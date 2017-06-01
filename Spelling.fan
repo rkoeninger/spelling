@@ -5,22 +5,14 @@ class Spelling {
     text := File.os("big.txt").readAllStr
     counts := Str:Int[:] { def = 0 }
     text.split.each |word| { counts[word] += 1 }
-    totalSize := (Int)(counts.vals.reduce(0) |sum, x, i| { (Int)sum + x })
-    args.each |arg| { echo(correction(counts, totalSize, arg)) }
+    args.each |arg| { echo(correction(counts, arg)) }
   }
 
-  static const Range letters := Range.makeExclusive(97, 97 + 26)
-
-  ** Probability of `word`.
-  static Float probability(Str:Int counts, Int totalSize, Str word) {
-    counts[word] / totalSize.toFloat
-  }
+  static const Range letters := Range.makeInclusive(97, 122)
 
   ** Most probable spelling correction for `word`.
-  static Str correction(Str:Int counts, Int totalSize, Str word) {
-    candidates(counts, word).max |x, y| {
-      probability(counts, totalSize, x) <=> probability(counts, totalSize, y)
-    }
+  static Str correction(Str:Int counts, Str word) {
+    candidates(counts, word).max |x, y| { counts[x] <=> counts[y] }
   }
 
   ** Generate possible spelling corrections for `word`.
