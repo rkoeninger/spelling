@@ -1,4 +1,4 @@
-[![Fantom version](https://img.shields.io/badge/Fantom-1.0.69-blue.svg)](http://fantom.org/)
+[![Fantom version](https://img.shields.io/badge/Fantom-1.0.69-14253c.svg)](http://fantom.org/)
 
 # Spelling
 
